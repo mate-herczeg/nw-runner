@@ -18,7 +18,11 @@ module.exports = class NwRunner {
     }
 
     run () {
-        return this._downloadPromise.then((nwPath) => childp.spawn(this._getNwFileByPath(nwPath)));
+        let argumentArray = Array.prototype.slice.call(arguments);
+
+        return this._downloadPromise.then(
+            (nwPath) => childp.spawn(this._getNwFileByPath(nwPath), argumentArray)
+        );
     }
 
     _getNwFileByPath(nwPath) {
