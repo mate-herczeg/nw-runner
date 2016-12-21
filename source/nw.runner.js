@@ -4,16 +4,16 @@ const nwDownloader = require('nw-downloader');
 const childp = require('child_process');
 const path = require('path');
 
-const NW_FILEPATH = {
-    windows: 'nw.exe',
+const NW_FILEPATHS = {
+    win: 'nw.exe',
     linux: 'nw',
-    osx: 'nw' 
+    osx: 'nwjs.app/Contents/MacOS/nwjs' 
 };
 
 module.exports = class NwRunner {
 
     constructor(downloaderConfig) {
-        this._downloaderConfig = downloaderConfig;
+        this._platform = downloaderConfig.platform;
         this._downloadPromise = nwDownloader(downloaderConfig);
     }
 
@@ -26,16 +26,10 @@ module.exports = class NwRunner {
     }
 
     _getNwFilePath() {
-        switch (this._downloaderConfig.platform) {
-            case 'win': 
-                return NW_FILEPATH.windows;
-                break;
-            case 'linux':
-                return NW_FILEPATH.linux; 
-                break;
-            case 'osx': 
-                return NW_FILEPATH.osx;
-                break;
-        };
+        if (!NW_FILEPATHS[this._platform]) {
+            throw Error('Could not find nwjs executable for the specified platform: ' + this._platform);
+        }
+
+        return NW_FILEPATHS[this._platform];
     }
 };
