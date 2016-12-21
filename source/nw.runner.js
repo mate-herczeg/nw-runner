@@ -12,13 +12,16 @@ const NW_FILEPATHS = {
 
 module.exports = class NwRunner {
 
-    constructor(downloaderConfig) {
+    constructor(appPath, downloaderConfig) {
+        this._appPath = appPath; 
         this._platform = downloaderConfig.platform;
         this._downloadPromise = nwDownloader(downloaderConfig);
     }
 
     run () {
-        let argumentArray = Array.prototype.slice.call(arguments);
+        const argumentArray = Array.from(arguments);
+
+        argumentArray.unshift(this._appPath);
 
         return this._downloadPromise.then(
             (nwPath) => childp.spawn(this._getNwFileByPath(nwPath), argumentArray)
@@ -30,10 +33,6 @@ module.exports = class NwRunner {
     }
 
     _getNwFilePath() {
-        if (!NW_FILEPATHS[this._platform]) {
-            throw Error('Could not find nwjs executable for the specified platform: ' + this._platform);
-        }
-
         return NW_FILEPATHS[this._platform];
     }
 };
